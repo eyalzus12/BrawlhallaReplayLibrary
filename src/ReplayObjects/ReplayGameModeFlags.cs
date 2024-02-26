@@ -2,7 +2,6 @@ using System;
 
 namespace BrawlhallaReplayLibrary;
 
-//size: 2 bytes
 [Flags]
 public enum ReplayGameModeFlags : ushort
 {
