@@ -4,7 +4,6 @@ using System.Text;
 
 namespace BrawlhallaReplayLibrary;
 
-//TODO: this should inherit from Stream
 internal class BitStream : IDisposable
 {
     private readonly Stream _stream;

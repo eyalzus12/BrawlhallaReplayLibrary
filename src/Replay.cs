@@ -16,7 +16,9 @@ public record Replay
 
     public static Replay Load(Stream stream, bool ignoreChecksum = false, bool ignoreVersionMatch = false)
     {
-        //compress
+        //TODO: avoid copying the stream into an array.
+        //TODO: create a ReplayCipherStream on top of the MemoryStream.
+        //decompress
         using MemoryStream bufferStream = new();
         using (ZLibStream zlibStream = new(stream, CompressionMode.Decompress))
         {
