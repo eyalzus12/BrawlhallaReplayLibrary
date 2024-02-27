@@ -1,21 +1,30 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 
 namespace BrawlhallaReplayLibrary;
 
-internal class BitStream : IDisposable
+internal class BitStream
 {
-    private readonly Stream _stream;
-    private byte _currentByte = 0;
-    private int _currentByteIndex = 0;
+    private readonly BitArray _bits;
+    private byte _currentIndex = 0;
 
-    public long Length => 8 * _stream.Length;
-    public long Position => 8 * _stream.Position + _currentByteIndex;
+    public long Length => _bits.Length;
+    public long Position => _currentIndex;
 
-    public BitStream(Stream stream)
+    public BitStream(byte[] bytes)
     {
-        _stream = stream; _stream.Position = 0;
+        _currentIndex = 0;
+        _bits = new(bytes.Length * 8);
+
+        for (int i = 0; i < bytes.Length; ++i)
+        {
+            for (int k = 0; k < 8; ++k)
+            {
+                _bits[8 * i + k] = (bytes[i] & (1u << (7 - k))) != 0;
+            }
+        }
     }
 
     public uint ReadBits(int count)
@@ -23,17 +32,11 @@ internal class BitStream : IDisposable
         uint result = 0;
         while (count != 0)
         {
-            if (_currentByteIndex == 8)
-            {
-                _currentByteIndex = 0;
-                int nextByte = _stream.ReadByte();
-                if (nextByte == -1) throw new EndOfStreamException();
-                _currentByte = (byte)nextByte;
-            }
-            bool bit = (_currentByte & (1 << _currentByteIndex)) != 0;
-            result |= (bit ? 1u : 0u) << (count - 1);
+            if (_currentIndex >= _bits.Length)
+                throw new EndOfStreamException();
+            result |= (_bits[_currentIndex] ? 1u : 0u) << (count - 1);
             count--;
-            _currentByteIndex++;
+            _currentIndex++;
         }
         return result;
     }
@@ -76,26 +79,5 @@ internal class BitStream : IDisposable
         byte[] floatBytes = BitConverter.GetBytes(bits);
         float result = BitConverter.ToSingle(floatBytes, 0);
         return result;
-    }
-
-    private bool disposedValue;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                _stream.Dispose();
-            }
-
-            disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 }
