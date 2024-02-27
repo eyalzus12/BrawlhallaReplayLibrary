@@ -31,7 +31,7 @@ public record Replay
         using MemoryStream replayBytesStream = new(replayBytes);
         using BitStream bits = new(replayBytesStream);
         //create replay
-        return Replay.CreateFrom(bits, ignoreChecksum, ignoreVersionMatch);
+        return CreateFrom(bits, ignoreChecksum, ignoreVersionMatch);
     }
 
     internal static Replay CreateFrom(BitStream bits, bool ignoreChecksum = false, bool ignoreVersionMatch = false)
@@ -50,21 +50,33 @@ public record Replay
             switch (replayObjectType)
             {
                 case ReplayObjectTypeEnum.Header:
+                    if (header is not null)
+                        throw new InvalidReplayDataException("Duplicate replay header");
                     header = ReplayHeader.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.GameData:
+                    if (gameData is not null)
+                        throw new InvalidReplayDataException("Duplicate game data");
                     gameData = ReplayGameData.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.Results:
+                    if (result is not null)
+                        throw new InvalidReplayDataException("Duplicate results");
                     result = ReplayResult.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.KnockoutFaces:
+                    if (knockoutFaces is not null)
+                        throw new InvalidReplayDataException("Duplicate knockout faces");
                     knockoutFaces = ReplayFaces.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.Faces:
+                    if (otherFaces is not null)
+                        throw new InvalidReplayDataException("Duplicate faces");
                     otherFaces = ReplayFaces.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.Inputs:
+                    if (inputs is not null)
+                        throw new InvalidReplayDataException("Duplicate inputs");
                     inputs = ReplayInputList.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.End:
