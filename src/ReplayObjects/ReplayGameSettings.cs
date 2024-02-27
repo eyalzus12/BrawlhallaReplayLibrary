@@ -1,3 +1,5 @@
+using System;
+
 namespace BrawlhallaReplayLibrary;
 
 public record ReplayGameSettings

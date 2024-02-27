@@ -24,7 +24,7 @@ public record ReplayHeroType
         uint checksum = 0;
         checksum += HeroId * (17u + index);
         checksum += CostumeId * (7u + index);
-        checksum += StanceIndex * (17u + index);
+        checksum += StanceIndex * (3u + index);
         checksum += (uint)(WeaponSkin2 << 16 | WeaponSkin1) * (2u + index);
         return checksum;
     }

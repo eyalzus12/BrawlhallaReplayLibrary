@@ -23,7 +23,7 @@ public class ReplayOwnedTaunts
         uint[] packed = new uint[8];
         for (int i = 0; i < 256; ++i)
         {
-            int whichPacked = i / 8;
+            int whichPacked = i / 32;
             int bitIndex = i % 32;
             packed[whichPacked] |= (_bits[i] ? 1u : 0u) << (31 - bitIndex);
         }

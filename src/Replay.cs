@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 
@@ -9,7 +10,7 @@ public record Replay
         ReplayGameData GameData,
         ReplayResult Result,
         ReplayFaces KnockoutFaces,
-        ReplayFaces OtherFaces,
+        ReplayFaces? OtherFaces,
         ReplayInputList Inputs
     )
 {
@@ -44,6 +45,7 @@ public record Replay
         while (bits.Position < bits.Length && !reachedReplayEnd)
         {
             ReplayObjectTypeEnum replayObjectType = (ReplayObjectTypeEnum)bits.ReadBits(3);
+            Console.WriteLine($"Got {replayObjectType}");
             switch (replayObjectType)
             {
                 case ReplayObjectTypeEnum.Header:
@@ -57,9 +59,9 @@ public record Replay
                     gameData = ReplayGameData.CreateFrom(bits);
                     break;
                 case ReplayObjectTypeEnum.Results:
-                    if (result is not null)
-                        throw new InvalidReplayDataException("Duplicate results");
-                    result = ReplayResult.CreateFrom(bits);
+                    ReplayResult newResult = ReplayResult.CreateFrom(bits);
+                    if (result is null) result = newResult;
+                    else result = ReplayResult.Merge(result, newResult);
                     break;
                 case ReplayObjectTypeEnum.KnockoutFaces:
                     if (knockoutFaces is not null)
@@ -92,8 +94,6 @@ public record Replay
             throw new InvalidReplayDataException("No game result found in replay");
         if (knockoutFaces is null)
             throw new InvalidReplayDataException("No knockout faces found in replay");
-        if (otherFaces is null)
-            throw new InvalidReplayDataException("No non-knockout faces found in replay");
         if (inputs is null)
             throw new InvalidReplayDataException("No input data found in replay");
 

@@ -8,7 +8,7 @@ namespace BrawlhallaReplayLibrary;
 internal class BitStream
 {
     private readonly BitArray _bits;
-    private byte _currentIndex = 0;
+    private int _currentIndex = 0;
 
     public long Length => _bits.Length;
     public long Position => _currentIndex;

@@ -1,8 +1,10 @@
+using System;
+
 namespace BrawlhallaReplayLibrary;
 
 public record ReplayHeader
     (
-        int RandomSeed,
+        uint RandomSeed,
         uint Version,
         uint PlaylistId,
         string? PlaylistName,
@@ -11,7 +13,7 @@ public record ReplayHeader
 {
     internal static ReplayHeader CreateFrom(BitStream bits)
     {
-        int randomSeed = bits.ReadInt();
+        uint randomSeed = bits.ReadUInt();
         uint version = bits.ReadUInt();
         uint playlistId = bits.ReadUInt();
         string? playlistName = (playlistId != 0) ? bits.ReadString() : null;
