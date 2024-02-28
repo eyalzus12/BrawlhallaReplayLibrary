@@ -20,7 +20,7 @@ public record ReplayGameData
         ushort heroCount = bits.ReadUShort();
         if (heroCount <= 0 || 5 < heroCount)
             throw new InvalidReplayDataException($"HeroCount is {heroCount}, but must be between 1 and 5");
-        List<ReplayEntityData> entities = new();
+        List<ReplayEntityData> entities = [];
         while (bits.ReadBool())
             entities.Add(ReplayEntityData.CreateFrom(bits, heroCount));
         uint version = bits.ReadUInt();

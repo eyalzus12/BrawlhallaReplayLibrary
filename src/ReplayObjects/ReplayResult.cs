@@ -9,7 +9,7 @@ public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, s
     {
         uint length = bits.ReadUInt();
         uint version = bits.ReadUInt();
-        Dictionary<byte, short> scores = new();
+        Dictionary<byte, short> scores = [];
         if (bits.ReadBool())
         {
             while (bits.ReadBool())
@@ -35,7 +35,7 @@ public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, s
             throw new InvalidReplayDataException($"First result has EndOfMatchFanfareId {result1.EndOfMatchFanfareId}, but second has EndOfMatchFanfareId {result2.EndOfMatchFanfareId}");
         if (result1.Version != result2.Version)
             throw new ReplayVersionException($"First result has version {result1.Version}, but second has version {result2.Version}");
-        Dictionary<byte, short> scores = new();
+        Dictionary<byte, short> scores = [];
         foreach ((byte entId, short score) in result1.Scores)
         {
             scores.TryAdd(entId, 0);

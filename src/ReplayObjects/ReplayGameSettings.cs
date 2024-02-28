@@ -15,7 +15,7 @@ public record ReplayGameSettings
         uint DamageMultiplier,
         uint LevelSetId,
         ReplayGadgetSelectionEnum GadgetSelection,
-        ReplayGadgetSelectFlags CustomGadgets
+        ReplayGadgetSelectFlags CustomGadgetSelection
     )
 {
     internal static ReplayGameSettings CreateFrom(BitStream bits)
@@ -31,8 +31,8 @@ public record ReplayGameSettings
         uint damageMultiplier = bits.ReadUInt();
         uint levelSetId = bits.ReadUInt();
         ReplayGadgetSelectionEnum gadgetSelection = (ReplayGadgetSelectionEnum)bits.ReadUInt();
-        ReplayGadgetSelectFlags customGadgets = (ReplayGadgetSelectFlags)bits.ReadUInt();
+        ReplayGadgetSelectFlags customGadgetSelection = (ReplayGadgetSelectFlags)bits.ReadUInt();
 
-        return new(flags, maxPlayers, duration, roundDuration, startingLives, scoringTypeId, scoreToWin, gameSpeed, damageMultiplier, levelSetId, gadgetSelection, customGadgets);
+        return new(flags, maxPlayers, duration, roundDuration, startingLives, scoringTypeId, scoreToWin, gameSpeed, damageMultiplier, levelSetId, gadgetSelection, customGadgetSelection);
     }
 }

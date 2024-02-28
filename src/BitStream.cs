@@ -41,6 +41,19 @@ internal class BitStream
         return result;
     }
 
+    public BitArray ReadManyBits(int count)
+    {
+        BitArray result = new(count);
+        for (int i = 0; i < count; ++i)
+        {
+            if (_currentIndex >= _bits.Length)
+                throw new EndOfStreamException();
+            result[i] = _bits[_currentIndex];
+            _currentIndex++;
+        }
+        return result;
+    }
+
     public bool ReadBool() => ReadBits(1) != 0;
 
     public byte ReadByte() => (byte)ReadBits(8);

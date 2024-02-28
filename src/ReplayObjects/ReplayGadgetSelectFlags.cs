@@ -5,6 +5,7 @@ namespace BrawlhallaReplayLibrary;
 [Flags]
 public enum ReplayGadgetSelectFlags : ushort
 {
+    None = 0,
     BouncyBombs = 0b0000001,
     PressureMines = 0b0000010,
     Spikeballs = 0b0000100,

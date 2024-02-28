@@ -8,13 +8,13 @@ public record ReplayInputList(ReadOnlyDictionary<byte, ReadOnlyCollection<Replay
 {
     internal static ReplayInputList CreateFrom(BitStream bits)
     {
-        Dictionary<byte, List<ReplayInput>> inputs = new();
+        Dictionary<byte, List<ReplayInput>> inputs = [];
 
         while (bits.ReadBool())
         {
             byte entId = (byte)bits.ReadBits(5);
             int inputCount = bits.ReadInt();
-            inputs.TryAdd(entId, new());
+            inputs.TryAdd(entId, []);
             for (int i = 0; i < inputCount; ++i)
             {
                 ReplayInput input = ReplayInput.CreateFrom(bits);

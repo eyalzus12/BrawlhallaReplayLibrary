@@ -5,6 +5,7 @@ namespace BrawlhallaReplayLibrary;
 [Flags]
 public enum ReplayInputFlags : ushort
 {
+    None = 0,
     AimUp = 0b0000_0000_00_0001,
     Drop = 0b0000_0000_00_0010,
     MoveLeft = 0b0000_0000_00_0100,

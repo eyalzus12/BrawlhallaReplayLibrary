@@ -45,7 +45,6 @@ public record Replay
         while (bits.Position < bits.Length && !reachedReplayEnd)
         {
             ReplayObjectTypeEnum replayObjectType = (ReplayObjectTypeEnum)bits.ReadBits(3);
-            Console.WriteLine($"Got {replayObjectType}");
             switch (replayObjectType)
             {
                 case ReplayObjectTypeEnum.Header:

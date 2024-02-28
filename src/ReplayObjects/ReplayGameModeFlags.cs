@@ -5,6 +5,7 @@ namespace BrawlhallaReplayLibrary;
 [Flags]
 public enum ReplayGameModeFlags : ushort
 {
+    None = 0,
     Teams = 0b0000000001,
     TeamDamage = 0b0000000010,
     FixedCamera = 0b00000000100,

@@ -32,14 +32,18 @@ public record ReplayPlayerData
         uint spawnBotId = bits.ReadUInt();
         uint emitterId = bits.ReadUInt();
         uint playerThemeId = bits.ReadUInt();
-        uint[] ownedTauntsPacked = new uint[8]; for (int i = 0; i < 8; i++) ownedTauntsPacked[i] = bits.ReadUInt();
+        ReplayOwnedTaunts ownedTaunts = ReplayOwnedTaunts.CreateFrom(bits);
         ushort winTauntId = bits.ReadUShort();
         ushort loseTauntId = bits.ReadUShort();
-        List<uint> taunts = new(); while (bits.ReadBool()) taunts.Add(bits.ReadUInt());
+        List<uint> taunts = [];
+        while (bits.ReadBool())
+            taunts.Add(bits.ReadUInt());
         uint avatarId = bits.ReadUShort();
         int team = bits.ReadInt();
         int connectionTime = bits.ReadInt();
-        List<ReplayHeroType> heroTypes = new(heroCount); for (uint i = 0; i < heroCount; i++) heroTypes.Add(ReplayHeroType.CreateFrom(bits));
+        List<ReplayHeroType> heroTypes = new(heroCount);
+        for (uint i = 0; i < heroCount; i++)
+            heroTypes.Add(ReplayHeroType.CreateFrom(bits));
         bool isBot = bits.ReadBool();
         bool handicapsEnabled = bits.ReadBool();
         uint? handicapStockCount = handicapsEnabled ? bits.ReadUInt() : null;
@@ -52,7 +56,7 @@ public record ReplayPlayerData
             spawnBotId,
             emitterId,
             playerThemeId,
-            new(ownedTauntsPacked),
+            ownedTaunts,
             winTauntId,
             loseTauntId,
             taunts.AsReadOnly(),
