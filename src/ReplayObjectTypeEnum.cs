@@ -9,4 +9,5 @@ public enum ReplayObjectTypeEnum
     KnockoutFaces = 5,
     Results = 6,
     Faces = 7,
+    InvalidReplay = 8,
 }

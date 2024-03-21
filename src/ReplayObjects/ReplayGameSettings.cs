@@ -1,5 +1,3 @@
-using System;
-
 namespace BrawlhallaReplayLibrary;
 
 public record ReplayGameSettings
@@ -14,6 +12,10 @@ public record ReplayGameSettings
         uint GameSpeed,
         uint DamageMultiplier,
         uint LevelSetId,
+        uint ItemSpawnRuleSetId,
+        uint WeaponSpawnRateId,
+        uint GadgetSpawnRateId,
+        uint Unused,
         ReplayGadgetSelectionEnum GadgetSelection,
         ReplayGadgetSelectFlags CustomGadgetSelection
     )
@@ -30,9 +32,30 @@ public record ReplayGameSettings
         uint gameSpeed = bits.ReadUInt();
         uint damageMultiplier = bits.ReadUInt();
         uint levelSetId = bits.ReadUInt();
+        uint itemSpawnRuleSetId = bits.ReadUInt();
+        uint weaponSpawnRateId = bits.ReadUInt();
+        uint gadgetSpawnRateId = bits.ReadUInt();
+        uint unused = bits.ReadUInt();
         ReplayGadgetSelectionEnum gadgetSelection = (ReplayGadgetSelectionEnum)bits.ReadUInt();
         ReplayGadgetSelectFlags customGadgetSelection = (ReplayGadgetSelectFlags)bits.ReadUInt();
 
-        return new(flags, maxPlayers, duration, roundDuration, startingLives, scoringTypeId, scoreToWin, gameSpeed, damageMultiplier, levelSetId, gadgetSelection, customGadgetSelection);
+        return new(
+            Flags: flags,
+            MaxPlayers: maxPlayers,
+            Duration: duration,
+            RoundDuration: roundDuration,
+            StartingLives: startingLives,
+            ScoringTypeId: scoringTypeId,
+            ScoreToWin: scoreToWin,
+            GameSpeed: gameSpeed,
+            DamageMultiplier: damageMultiplier,
+            LevelSetId: levelSetId,
+            ItemSpawnRuleSetId: itemSpawnRuleSetId,
+            WeaponSpawnRateId: weaponSpawnRateId,
+            GadgetSpawnRateId: gadgetSpawnRateId,
+            Unused: unused,
+            GadgetSelection: gadgetSelection,
+            CustomGadgetSelection: customGadgetSelection
+        );
     }
 }

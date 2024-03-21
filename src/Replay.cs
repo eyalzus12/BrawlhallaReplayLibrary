@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 
@@ -44,7 +43,7 @@ public record Replay
         bool reachedReplayEnd = false;
         while (bits.Position < bits.Length && !reachedReplayEnd)
         {
-            ReplayObjectTypeEnum replayObjectType = (ReplayObjectTypeEnum)bits.ReadBits(3);
+            ReplayObjectTypeEnum replayObjectType = (ReplayObjectTypeEnum)bits.ReadBits(4);
             switch (replayObjectType)
             {
                 case ReplayObjectTypeEnum.Header:
@@ -80,6 +79,8 @@ public record Replay
                 case ReplayObjectTypeEnum.End:
                     reachedReplayEnd = true;
                     break;
+                case ReplayObjectTypeEnum.InvalidReplay:
+                    throw new InvalidReplayDataException("Object type 8 found. Replay is invalid.");
                 default:
                     throw new InvalidReplayDataException($"Unknown replay object type {replayObjectType}");
             }
