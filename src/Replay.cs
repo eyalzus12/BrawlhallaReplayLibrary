@@ -5,6 +5,7 @@ namespace BrawlhallaReplayLibrary;
 
 public record Replay
     (
+        uint Version,
         ReplayHeader Header,
         ReplayGameData GameData,
         ReplayResult Result,
@@ -14,7 +15,7 @@ public record Replay
     )
 {
 
-    public static Replay Load(Stream stream, bool ignoreChecksum = false, bool ignoreVersionMatch = false)
+    public static Replay Load(Stream stream, bool ignoreChecksum = false)
     {
         //decompress
         using MemoryStream bufferStream = new();
@@ -28,11 +29,13 @@ public record Replay
         //create bit stream
         BitStream bits = new(replayBytes);
         //create replay
-        return CreateFrom(bits, ignoreChecksum, ignoreVersionMatch);
+        return CreateFrom(bits, ignoreChecksum);
     }
 
-    internal static Replay CreateFrom(BitStream bits, bool ignoreChecksum = false, bool ignoreVersionMatch = false)
+    internal static Replay CreateFrom(BitStream bits, bool ignoreChecksum = false)
     {
+        uint version = bits.ReadUInt();
+
         ReplayHeader? header = null;
         ReplayGameData? gameData = null;
         ReplayResult? result = null;
@@ -100,16 +103,6 @@ public record Replay
         if (!ignoreChecksum)
             gameData.ValidateChecksum();
 
-        if (!ignoreVersionMatch)
-        {
-            if (header.Version != gameData.Version)
-                throw new ReplayVersionException($"Replay header has version {header.Version} but game data has version {gameData.Version}");
-            if (header.Version != result.Version)
-                throw new ReplayVersionException($"Replay header has version {header.Version} but result has version {result.Version}");
-            if (gameData.Version != result.Version)
-                throw new ReplayVersionException($"Replay game data has version {gameData.Version} but result has version {result.Version}");
-        }
-
-        return new(header, gameData, result, knockoutFaces, otherFaces, inputs);
+        return new(version, header, gameData, result, knockoutFaces, otherFaces, inputs);
     }
 }

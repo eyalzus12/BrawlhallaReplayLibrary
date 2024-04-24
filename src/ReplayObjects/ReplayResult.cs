@@ -3,12 +3,11 @@ using System.Collections.ObjectModel;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, short> Scores, uint EndOfMatchFanfareId)
+public record ReplayResult(uint Length, ReadOnlyDictionary<byte, short> Scores, uint EndOfMatchFanfareId)
 {
     internal static ReplayResult CreateFrom(BitStream bits)
     {
         uint length = bits.ReadUInt();
-        uint version = bits.ReadUInt();
         Dictionary<byte, short> scores = [];
         if (bits.ReadBool())
         {
@@ -24,7 +23,7 @@ public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, s
         }
         uint endOfMatchFanfareId = bits.ReadUInt();
 
-        return new(length, version, scores.AsReadOnly(), endOfMatchFanfareId);
+        return new(length, scores.AsReadOnly(), endOfMatchFanfareId);
     }
 
     internal static ReplayResult Merge(ReplayResult result1, ReplayResult result2)
@@ -33,8 +32,6 @@ public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, s
             throw new InvalidReplayDataException($"First result has length {result1.Length}, but second has length {result2.Length}");
         if (result1.EndOfMatchFanfareId != result2.EndOfMatchFanfareId)
             throw new InvalidReplayDataException($"First result has EndOfMatchFanfareId {result1.EndOfMatchFanfareId}, but second has EndOfMatchFanfareId {result2.EndOfMatchFanfareId}");
-        if (result1.Version != result2.Version)
-            throw new ReplayVersionException($"First result has version {result1.Version}, but second has version {result2.Version}");
         Dictionary<byte, short> scores = [];
         foreach ((byte entId, short score) in result1.Scores)
         {
@@ -46,6 +43,6 @@ public record ReplayResult(uint Length, uint Version, ReadOnlyDictionary<byte, s
             scores.TryAdd(entId, 0);
             scores[entId] += score;
         }
-        return new(result1.Length, result1.Version, scores.AsReadOnly(), result1.EndOfMatchFanfareId);
+        return new(result1.Length, scores.AsReadOnly(), result1.EndOfMatchFanfareId);
     }
 }

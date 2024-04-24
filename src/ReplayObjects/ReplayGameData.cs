@@ -9,7 +9,6 @@ public record ReplayGameData
         uint LevelId,
         ushort HeroCount,
         ReadOnlyCollection<ReplayEntityData> Entities,
-        uint Version,
         uint Checksum
     )
 {
@@ -23,10 +22,9 @@ public record ReplayGameData
         List<ReplayEntityData> entities = [];
         while (bits.ReadBool())
             entities.Add(ReplayEntityData.CreateFrom(bits, heroCount));
-        uint version = bits.ReadUInt();
         uint checksum = bits.ReadUInt();
 
-        return new(settings, levelId, heroCount, entities.AsReadOnly(), version, checksum);
+        return new(settings, levelId, heroCount, entities.AsReadOnly(), checksum);
     }
 
     public uint CalculateChecksum()
