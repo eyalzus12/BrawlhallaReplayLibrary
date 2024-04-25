@@ -15,8 +15,8 @@ public record ReplayGameSettings
         uint ItemSpawnRuleSetId,
         uint WeaponSpawnRateId,
         uint GadgetSpawnRateId,
-        ReplayGadgetSelectionEnum GadgetSelection,
-        ReplayGadgetSelectFlags CustomGadgetSelection
+        ReplayGadgetSelectFlags CustomGadgetSelection,
+        uint Variation
     )
 {
     internal static ReplayGameSettings CreateFrom(BitStream bits)
@@ -34,8 +34,8 @@ public record ReplayGameSettings
         uint itemSpawnRuleSetId = bits.ReadUInt();
         uint weaponSpawnRateId = bits.ReadUInt();
         uint gadgetSpawnRateId = bits.ReadUInt();
-        ReplayGadgetSelectionEnum gadgetSelection = (ReplayGadgetSelectionEnum)bits.ReadUInt();
         ReplayGadgetSelectFlags customGadgetSelection = (ReplayGadgetSelectFlags)bits.ReadUInt();
+        uint variation = bits.ReadUInt();
 
         return new(
             Flags: flags,
@@ -51,8 +51,8 @@ public record ReplayGameSettings
             ItemSpawnRuleSetId: itemSpawnRuleSetId,
             WeaponSpawnRateId: weaponSpawnRateId,
             GadgetSpawnRateId: gadgetSpawnRateId,
-            GadgetSelection: gadgetSelection,
-            CustomGadgetSelection: customGadgetSelection
+            CustomGadgetSelection: customGadgetSelection,
+            Variation: variation
         );
     }
 }

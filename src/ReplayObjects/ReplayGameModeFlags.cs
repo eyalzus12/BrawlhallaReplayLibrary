@@ -3,7 +3,7 @@ using System;
 namespace BrawlhallaReplayLibrary;
 
 [Flags]
-public enum ReplayGameModeFlags : ushort
+public enum ReplayGameModeFlags : uint
 {
     None = 0,
     Teams = 0b0000000001,

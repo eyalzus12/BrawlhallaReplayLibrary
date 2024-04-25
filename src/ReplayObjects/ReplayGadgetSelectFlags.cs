@@ -3,7 +3,7 @@ using System;
 namespace BrawlhallaReplayLibrary;
 
 [Flags]
-public enum ReplayGadgetSelectFlags : ushort
+public enum ReplayGadgetSelectFlags : uint
 {
     None = 0,
     BouncyBombs = 0b0000001,
