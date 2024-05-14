@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayInputList(ReadOnlyDictionary<byte, ReadOnlyCollection<ReplayInput>> Inputs)
+public class ReplayInputList
 {
+    public required Dictionary<byte, List<ReplayInput>> Inputs { get; set; } // key is 5 bits
+
     internal static ReplayInputList CreateFrom(BitStream bits)
     {
         Dictionary<byte, List<ReplayInput>> inputs = [];
@@ -22,6 +22,9 @@ public record ReplayInputList(ReadOnlyDictionary<byte, ReadOnlyCollection<Replay
             }
         }
 
-        return new(inputs.ToDictionary(entry => entry.Key, entry => entry.Value.AsReadOnly()).AsReadOnly());
+        return new()
+        {
+            Inputs = inputs,
+        };
     }
 }

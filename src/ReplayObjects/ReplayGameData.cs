@@ -1,36 +1,39 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayGameData
-    (
-        ReplayGameSettings Settings,
-        uint LevelId,
-        ushort HeroCount,
-        ReadOnlyCollection<ReplayEntityData> Entities,
-        uint Checksum
-    )
+public class ReplayGameData
 {
+    public required ReplayGameSettings Settings { get; set; }
+    public required uint LevelId { get; set; }
+    public required List<ReplayEntityData> Entities { get; set; }
+    public required uint Checksum { get; set; }
+
     internal static ReplayGameData CreateFrom(BitStream bits)
     {
         ReplayGameSettings settings = ReplayGameSettings.CreateFrom(bits);
         uint levelId = bits.ReadUInt();
         ushort heroCount = bits.ReadUShort();
-        if (heroCount <= 0 || 5 < heroCount)
+        if (heroCount < 1 || 5 < heroCount)
             throw new InvalidReplayDataException($"HeroCount is {heroCount}, but must be between 1 and 5");
         List<ReplayEntityData> entities = [];
         while (bits.ReadBool())
             entities.Add(ReplayEntityData.CreateFrom(bits, heroCount));
         uint checksum = bits.ReadUInt();
 
-        return new(settings, levelId, heroCount, entities.AsReadOnly(), checksum);
+        return new()
+        {
+            Settings = settings,
+            LevelId = levelId,
+            Entities = entities,
+            Checksum = checksum,
+        };
     }
 
     public uint CalculateChecksum()
     {
         uint checksum = 0;
-        foreach(ReplayEntityData entity in Entities)
+        foreach (ReplayEntityData entity in Entities)
         {
             checksum += entity.CalculateChecksum();
         }
@@ -41,7 +44,7 @@ public record ReplayGameData
     public void ValidateChecksum()
     {
         uint calculatedChecksum = CalculateChecksum();
-        if(calculatedChecksum != Checksum)
+        if (calculatedChecksum != Checksum)
         {
             throw new ReplayChecksumException($"Expected {Checksum} but checksum was {calculatedChecksum}");
         }

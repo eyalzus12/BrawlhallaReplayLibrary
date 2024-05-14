@@ -1,31 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Numerics;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayPlayerData
-    (
-        uint ColorSchemeId,
-        uint SpawnBotId,
-        uint EmitterId,
-        uint PlayerThemeId,
-        ReplayOwnedTaunts OwnedTaunts,
-        ushort WinTauntId,
-        ushort LoseTauntId,
-        ReadOnlyCollection<uint> Taunts,
-        uint AvatarId,
-        int Team,
-        int ConnectionTime,
-        ReadOnlyCollection<ReplayHeroType> Heroes,
-        bool IsBot,
-        bool HandicapsEnabled,
-        uint? HandicapStockCount,
-        uint? HandicapDamageDoneMult,
-        uint? HandicapDamageTakenMult
-    )
+public class ReplayPlayerData
 {
+    public required uint ColorSchemeId { get; set; }
+    public required uint SpawnBotId { get; set; }
+    public required uint EmitterId { get; set; }
+    public required uint PlayerThemeId { get; set; }
+    public required ReplayOwnedTaunts OwnedTaunts { get; set; }
+    public required ushort WinTauntId { get; set; }
+    public required ushort LoseTauntId { get; set; }
+    public required List<uint> Taunts { get; set; }
+    public required uint AvatarId { get; set; }
+    public required int Team { get; set; }
+    public required int ConnectionTime { get; set; }
+    public required List<ReplayHeroType> HeroTypes { get; set; }
+    public required bool IsBot { get; set; }
+    public required bool HandicapsEnabled { get; set; }
+    public required uint? HandicapStockCount { get; set; }
+    public required uint? HandicapDamageDoneMult { get; set; }
+    public required uint? HandicapDamageTakenMult { get; set; }
+
     internal static ReplayPlayerData CreateFrom(BitStream bits, int heroCount)
     {
         uint colorSchemeId = bits.ReadUInt();
@@ -50,26 +48,26 @@ public record ReplayPlayerData
         uint? handicapDamageDoneMult = handicapsEnabled ? bits.ReadUInt() : null;
         uint? handicapDamageTakenMult = handicapsEnabled ? bits.ReadUInt() : null;
 
-        return new
-        (
-            colorSchemeId,
-            spawnBotId,
-            emitterId,
-            playerThemeId,
-            ownedTaunts,
-            winTauntId,
-            loseTauntId,
-            taunts.AsReadOnly(),
-            avatarId,
-            team,
-            connectionTime,
-            heroTypes.AsReadOnly(),
-            isBot,
-            handicapsEnabled,
-            handicapStockCount,
-            handicapDamageDoneMult,
-            handicapDamageTakenMult
-        );
+        return new()
+        {
+            ColorSchemeId = colorSchemeId,
+            SpawnBotId = spawnBotId,
+            EmitterId = emitterId,
+            PlayerThemeId = playerThemeId,
+            OwnedTaunts = ownedTaunts,
+            WinTauntId = winTauntId,
+            LoseTauntId = loseTauntId,
+            Taunts = taunts,
+            AvatarId = avatarId,
+            Team = team,
+            ConnectionTime = connectionTime,
+            HeroTypes = heroTypes,
+            IsBot = isBot,
+            HandicapsEnabled = handicapsEnabled,
+            HandicapStockCount = handicapStockCount,
+            HandicapDamageDoneMult = handicapDamageDoneMult,
+            HandicapDamageTakenMult = handicapDamageTakenMult,
+        };
     }
 
     public uint CalculateChecksum()
@@ -85,8 +83,8 @@ public record ReplayPlayerData
         for (int i = 0; i < Taunts.Count; ++i)
             checksum += (uint)(BitOperations.PopCount(Taunts[i]) * (11u + i));
         checksum += (uint)Team * 43u;
-        for (int i = 0; i < Heroes.Count; ++i)
-            checksum += Heroes[i].CalculateChecksum((uint)i);
+        for (int i = 0; i < HeroTypes.Count; ++i)
+            checksum += HeroTypes[i].CalculateChecksum((uint)i);
 
         if (!HandicapsEnabled)
             checksum += 29;

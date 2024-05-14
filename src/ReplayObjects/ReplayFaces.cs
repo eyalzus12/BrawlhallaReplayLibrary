@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayFaces(ReadOnlyCollection<ReplayFace> Faces)
+public class ReplayFaces
 {
+    public required List<ReplayFace> Faces { get; set; }
+
     internal static ReplayFaces CreateFrom(BitStream bits)
     {
         List<ReplayFace> faces = [];
@@ -15,6 +16,9 @@ public record ReplayFaces(ReadOnlyCollection<ReplayFace> Faces)
         }
         faces.Sort((a, b) => a.TimeStamp.CompareTo(b.TimeStamp));
 
-        return new(faces.AsReadOnly());
+        return new()
+        {
+            Faces = faces
+        };
     }
 }

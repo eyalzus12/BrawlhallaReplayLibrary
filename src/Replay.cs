@@ -1,34 +1,29 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
 namespace BrawlhallaReplayLibrary;
 
-public record Replay
-    (
-        uint Version,
-        ReplayHeader Header,
-        ReplayGameData GameData,
-        ReplayResult Result,
-        ReplayFaces KnockoutFaces,
-        ReplayFaces? OtherFaces,
-        ReplayInputList Inputs
-    )
+public class Replay
 {
+
+    public required uint Version { get; set; }
+    public required ReplayHeader Header { get; set; }
+    public required ReplayGameData GameData { get; set; }
+    public required List<ReplayResult> Results { get; set; }
+    public required ReplayFaces KnockoutFaces { get; set; }
+    public ReplayFaces? OtherFaces { get; set; }
+    public required ReplayInputList Inputs { get; set; }
 
     public static Replay Load(Stream stream, bool ignoreChecksum = false)
     {
-        //decompress
         using MemoryStream bufferStream = new();
         using (ZLibStream zlibStream = new(stream, CompressionMode.Decompress))
         {
             zlibStream.CopyTo(bufferStream);
         }
-        byte[] replayBytes = bufferStream.ToArray();
-        //decrypt
-        ReplayUtils.CipherReplayBytes(replayBytes);
-        //create bit stream
-        BitStream bits = new(replayBytes);
-        //create replay
+        BitStream bits = new(bufferStream);
         return CreateFrom(bits, ignoreChecksum);
     }
 
@@ -38,7 +33,7 @@ public record Replay
 
         ReplayHeader? header = null;
         ReplayGameData? gameData = null;
-        ReplayResult? result = null;
+        List<ReplayResult> results = [];
         ReplayFaces? knockoutFaces = null;
         ReplayFaces? otherFaces = null;
         ReplayInputList? inputs = null;
@@ -61,8 +56,7 @@ public record Replay
                     break;
                 case ReplayObjectTypeEnum.Results:
                     ReplayResult newResult = ReplayResult.CreateFrom(bits);
-                    if (result is null) result = newResult;
-                    else result = ReplayResult.Merge(result, newResult);
+                    results.Add(newResult);
                     break;
                 case ReplayObjectTypeEnum.KnockoutFaces:
                     if (knockoutFaces is not null)
@@ -93,8 +87,6 @@ public record Replay
             throw new InvalidReplayDataException("No replay header found in replay");
         if (gameData is null)
             throw new InvalidReplayDataException("No game data found in replay");
-        if (result is null)
-            throw new InvalidReplayDataException("No game result found in replay");
         if (knockoutFaces is null)
             throw new InvalidReplayDataException("No knockout faces found in replay");
         if (inputs is null)
@@ -103,6 +95,15 @@ public record Replay
         if (!ignoreChecksum)
             gameData.ValidateChecksum();
 
-        return new(version, header, gameData, result, knockoutFaces, otherFaces, inputs);
+        return new()
+        {
+            Version = version,
+            Header = header,
+            GameData = gameData,
+            Results = results,
+            KnockoutFaces = knockoutFaces,
+            OtherFaces = otherFaces,
+            Inputs = inputs
+        };
     }
 }

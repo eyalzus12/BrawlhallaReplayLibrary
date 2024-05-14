@@ -17,11 +17,8 @@ internal class Sample
         JSON_OPTIONS.Converters.Add(new JsonOwnedTauntsConverter());
     }
 
-    public static void Main(string[] args)
+    public static void ParseToJson(string replayPath, string outputPath)
     {
-        string replayPath = args[0];
-        string outputPath = args[1];
-
         Replay replay;
         using (FileStream file = new(replayPath, FileMode.Open, FileAccess.Read))
         {
@@ -40,22 +37,24 @@ internal class Sample
             string? bitString = reader.GetString();
             if (bitString is null)
                 return null;
-            BitArray bits = new(bitString.Length);
-            for (int i = 0; i < bitString.Length; ++i)
+            if (bitString.Length != 256)
+                throw new ArgumentException($"Size of ReplayOwnedTaunts bit array must be 256");
+            BitArray bits = new(256);
+            for (int i = 0; i < 256; ++i)
             {
                 bits[i] = bitString[i] switch
                 {
                     '0' => false,
                     '1' => true,
-                    _ => throw new InvalidOperationException($"Invalid char {bitString[i]} in ReplayOwnedTaunts string")
+                    _ => throw new ArgumentException($"Invalid char {bitString[i]} in ReplayOwnedTaunts string")
                 };
             }
-            return new(bits);
+            return new() { TauntsBitfield = bits };
         }
 
         public override void Write(Utf8JsonWriter writer, ReplayOwnedTaunts value, JsonSerializerOptions options)
         {
-            BitArray bits = value.Bits;
+            BitArray bits = value.TauntsBitfield;
             StringBuilder builder = new(bits.Length);
             foreach (bool bit in bits) builder.Append(bit ? '1' : '0');
             string bitString = builder.ToString();

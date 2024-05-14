@@ -2,13 +2,17 @@ using System.Collections;
 
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayOwnedTaunts(BitArray Bits)
+public class ReplayOwnedTaunts
 {
-    public bool this[int index] => Bits[index];
+    public required BitArray TauntsBitfield { get; set; } // 256 bits
+    public bool this[int index] => TauntsBitfield[index];
 
     internal static ReplayOwnedTaunts CreateFrom(BitStream bits)
     {
-        return new(bits.ReadManyBits(256));
+        return new()
+        {
+            TauntsBitfield = new(bits.ReadManyBits(256))
+        };
     }
 
     public uint[] ToPacked()
@@ -18,7 +22,7 @@ public record ReplayOwnedTaunts(BitArray Bits)
         {
             int whichPacked = i / 32;
             int bitIndex = i % 32;
-            packed[whichPacked] |= (Bits[i] ? 1u : 0u) << (31 - bitIndex);
+            packed[whichPacked] |= (TauntsBitfield[i] ? 1u : 0u) << (31 - bitIndex);
         }
         return packed;
     }

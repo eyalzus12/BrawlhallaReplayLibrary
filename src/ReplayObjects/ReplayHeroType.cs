@@ -1,22 +1,28 @@
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayHeroType
-    (
-        uint HeroId,
-        uint CostumeId,
-        uint StanceIndex,
-        ushort WeaponSkin1,
-        ushort WeaponSkin2
-    )
+public class ReplayHeroType
 {
+    public required uint HeroId { get; set; }
+    public required uint CostumeId { get; set; }
+    public required uint StanceIndex { get; set; }
+    public required ushort WeaponSkin1 { get; set; }
+    public required ushort WeaponSkin2 { get; set; }
+
     internal static ReplayHeroType CreateFrom(BitStream bits)
     {
         uint heroId = bits.ReadUInt();
         uint costumeId = bits.ReadUInt();
         uint stanceIndex = bits.ReadUInt();
-        ushort weaponSkin2 = bits.ReadUShort(); //no, this order is not a mistake
+        ushort weaponSkin2 = bits.ReadUShort(); // no, this order is not a mistake
         ushort weaponSkin1 = bits.ReadUShort();
-        return new(heroId, costumeId, stanceIndex, weaponSkin1, weaponSkin2);
+        return new()
+        {
+            HeroId = heroId,
+            CostumeId = costumeId,
+            StanceIndex = stanceIndex,
+            WeaponSkin1 = weaponSkin1,
+            WeaponSkin2 = weaponSkin2,
+        };
     }
 
     public uint CalculateChecksum(uint index)

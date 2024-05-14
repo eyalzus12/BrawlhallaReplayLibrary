@@ -1,24 +1,23 @@
 namespace BrawlhallaReplayLibrary;
 
-public record ReplayGameSettings
-    (
-        ReplayGameModeFlags Flags,
-        uint MaxPlayers,
-        uint Duration,
-        uint RoundDuration,
-        uint StartingLives,
-        uint ScoringTypeId,
-        uint ScoreToWin,
-        uint GameSpeed,
-        uint DamageMultiplier,
-        uint LevelSetId,
-        uint ItemSpawnRuleSetId,
-        uint WeaponSpawnRateId,
-        uint GadgetSpawnRateId,
-        ReplayGadgetSelectFlags CustomGadgetSelection,
-        uint Variation
-    )
+public class ReplayGameSettings
 {
+    public required ReplayGameModeFlags Flags { get; set; }
+    public required uint MaxPlayers { get; set; }
+    public required uint Duration { get; set; }
+    public required uint RoundDuration { get; set; }
+    public required uint StartingLives { get; set; }
+    public required uint ScoringTypeId { get; set; }
+    public required uint ScoreToWin { get; set; }
+    public required uint GameSpeed { get; set; }
+    public required uint DamageMultiplier { get; set; }
+    public required uint LevelSetId { get; set; }
+    public required uint ItemSpawnRuleSetId { get; set; }
+    public required uint WeaponSpawnRateId { get; set; }
+    public required uint GadgetSpawnRateId { get; set; }
+    public required ReplayGadgetSelectFlags CustomGadgetSelection { get; set; }
+    public required uint Variation { get; set; }
+
     internal static ReplayGameSettings CreateFrom(BitStream bits)
     {
         ReplayGameModeFlags flags = (ReplayGameModeFlags)bits.ReadUInt();
@@ -37,22 +36,23 @@ public record ReplayGameSettings
         ReplayGadgetSelectFlags customGadgetSelection = (ReplayGadgetSelectFlags)bits.ReadUInt();
         uint variation = bits.ReadUInt();
 
-        return new(
-            Flags: flags,
-            MaxPlayers: maxPlayers,
-            Duration: duration,
-            RoundDuration: roundDuration,
-            StartingLives: startingLives,
-            ScoringTypeId: scoringTypeId,
-            ScoreToWin: scoreToWin,
-            GameSpeed: gameSpeed,
-            DamageMultiplier: damageMultiplier,
-            LevelSetId: levelSetId,
-            ItemSpawnRuleSetId: itemSpawnRuleSetId,
-            WeaponSpawnRateId: weaponSpawnRateId,
-            GadgetSpawnRateId: gadgetSpawnRateId,
-            CustomGadgetSelection: customGadgetSelection,
-            Variation: variation
-        );
+        return new()
+        {
+            Flags = flags,
+            MaxPlayers = maxPlayers,
+            Duration = duration,
+            RoundDuration = roundDuration,
+            StartingLives = startingLives,
+            ScoringTypeId = scoringTypeId,
+            ScoreToWin = scoreToWin,
+            GameSpeed = gameSpeed,
+            DamageMultiplier = damageMultiplier,
+            LevelSetId = levelSetId,
+            ItemSpawnRuleSetId = itemSpawnRuleSetId,
+            WeaponSpawnRateId = weaponSpawnRateId,
+            GadgetSpawnRateId = gadgetSpawnRateId,
+            CustomGadgetSelection = customGadgetSelection,
+            Variation = variation,
+        };
     }
 }
