@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -7,7 +6,6 @@ namespace BrawlhallaReplayLibrary;
 
 public class Replay
 {
-
     public required uint Version { get; set; }
     public required ReplayHeader Header { get; set; }
     public required ReplayGameData GameData { get; set; }
@@ -18,12 +16,8 @@ public class Replay
 
     public static Replay Load(Stream stream, bool ignoreChecksum = false)
     {
-        using MemoryStream bufferStream = new();
-        using (ZLibStream zlibStream = new(stream, CompressionMode.Decompress))
-        {
-            zlibStream.CopyTo(bufferStream);
-        }
-        BitStream bits = new(bufferStream);
+        using ZLibStream zlibStream = new(stream, CompressionMode.Decompress);
+        using BitStream bits = new(zlibStream);
         return CreateFrom(bits, ignoreChecksum);
     }
 
@@ -39,7 +33,7 @@ public class Replay
         ReplayInputList? inputs = null;
 
         bool reachedReplayEnd = false;
-        while (bits.Position < bits.Length && !reachedReplayEnd)
+        while (!reachedReplayEnd)
         {
             ReplayObjectTypeEnum replayObjectType = (ReplayObjectTypeEnum)bits.ReadBits(4);
             switch (replayObjectType)
@@ -53,6 +47,8 @@ public class Replay
                     if (gameData is not null)
                         throw new InvalidReplayDataException("Duplicate game data");
                     gameData = ReplayGameData.CreateFrom(bits);
+                    if (!ignoreChecksum)
+                        gameData.ValidateChecksum();
                     break;
                 case ReplayObjectTypeEnum.Results:
                     ReplayResult newResult = ReplayResult.CreateFrom(bits);
@@ -91,9 +87,6 @@ public class Replay
             throw new InvalidReplayDataException("No knockout faces found in replay");
         if (inputs is null)
             throw new InvalidReplayDataException("No input data found in replay");
-
-        if (!ignoreChecksum)
-            gameData.ValidateChecksum();
 
         return new()
         {
