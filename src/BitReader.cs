@@ -1,11 +1,12 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections;
 using System.IO;
 using System.Text;
 
 namespace BrawlhallaReplayLibrary;
 
-internal class BitReader(Stream stream) : IDisposable
+internal class BitReader(Stream stream, bool leaveOpen = false) : IDisposable
 {
     private static readonly byte[] REPLAY_BYTE_XOR = [0x6B, 0x10, 0xDE, 0x3C, 0x44, 0x4B, 0xD1, 0x46, 0xA0, 0x10, 0x52, 0xC1, 0xB2, 0x31, 0xD3, 0x6A, 0xFB, 0xAC, 0x11, 0xDE, 0x06, 0x68, 0x08, 0x78, 0x8C, 0xD5, 0xB3, 0xF9, 0x6A, 0x40, 0xD6, 0x13, 0x0C, 0xAE, 0x9D, 0xC5, 0xD4, 0x6B, 0x54, 0x72, 0xFC, 0x57, 0x5D, 0x1A, 0x06, 0x73, 0xC2, 0x51, 0x4B, 0xB0, 0xC9, 0x8C, 0x78, 0x04, 0x11, 0x7A, 0xEF, 0x74, 0x3E, 0x46, 0x39, 0xA0, 0xC7, 0xA6];
 
@@ -70,13 +71,9 @@ internal class BitReader(Stream stream) : IDisposable
     }
 
     public ushort ReadUShort() => (ushort)ReadBits(16);
-
     public short ReadShort() => (short)ReadUShort();
-
     public uint ReadUInt() => (uint)ReadBits(32);
-
     public int ReadInt() => (int)ReadUInt();
-
     public char ReadChar() => (char)ReadBits(8);
 
     public string ReadString()
@@ -89,9 +86,10 @@ internal class BitReader(Stream stream) : IDisposable
 
     public float ReadFloat()
     {
+        Span<byte> buffer = stackalloc byte[4];
         uint bits = (uint)ReadBits(32);
-        byte[] floatBytes = BitConverter.GetBytes(bits);
-        float result = BitConverter.ToSingle(floatBytes, 0);
+        BinaryPrimitives.WriteUInt32BigEndian(buffer, bits);
+        float result = BinaryPrimitives.ReadUInt32BigEndian(buffer);
         return result;
     }
 
@@ -101,7 +99,7 @@ internal class BitReader(Stream stream) : IDisposable
         {
             if (disposing)
             {
-                _stream.Dispose();
+                if (!leaveOpen) _stream.Dispose();
             }
 
             disposedValue = true;
