@@ -6,7 +6,7 @@ public class ReplayFaces
 {
     public required List<ReplayFace> Faces { get; set; }
 
-    internal static ReplayFaces CreateFrom(BitStream bits)
+    internal static ReplayFaces CreateFrom(BitReader bits)
     {
         List<ReplayFace> faces = [];
         while (bits.ReadBool())

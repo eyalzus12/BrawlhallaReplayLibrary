@@ -7,7 +7,7 @@ public class ReplayOwnedTaunts
     public required BitArray TauntsBitfield { get; set; } // 256 bits
     public bool this[int index] => TauntsBitfield[index];
 
-    internal static ReplayOwnedTaunts CreateFrom(BitStream bits)
+    internal static ReplayOwnedTaunts CreateFrom(BitReader bits)
     {
         return new()
         {

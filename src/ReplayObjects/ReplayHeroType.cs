@@ -8,7 +8,7 @@ public class ReplayHeroType
     public required ushort WeaponSkin1 { get; set; }
     public required ushort WeaponSkin2 { get; set; }
 
-    internal static ReplayHeroType CreateFrom(BitStream bits)
+    internal static ReplayHeroType CreateFrom(BitReader bits)
     {
         uint heroId = bits.ReadUInt();
         uint costumeId = bits.ReadUInt();

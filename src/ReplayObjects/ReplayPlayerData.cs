@@ -24,7 +24,7 @@ public class ReplayPlayerData
     public required uint? HandicapDamageDoneMult { get; set; }
     public required uint? HandicapDamageTakenMult { get; set; }
 
-    internal static ReplayPlayerData CreateFrom(BitStream bits, int heroCount)
+    internal static ReplayPlayerData CreateFrom(BitReader bits, int heroCount)
     {
         uint colorSchemeId = bits.ReadUInt();
         uint spawnBotId = bits.ReadUInt();

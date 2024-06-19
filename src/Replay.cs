@@ -17,11 +17,11 @@ public class Replay
     public static Replay Load(Stream stream, bool ignoreChecksum = false)
     {
         using ZLibStream zlibStream = new(stream, CompressionMode.Decompress);
-        using BitStream bits = new(zlibStream);
+        using BitReader bits = new(zlibStream);
         return CreateFrom(bits, ignoreChecksum);
     }
 
-    internal static Replay CreateFrom(BitStream bits, bool ignoreChecksum = false)
+    internal static Replay CreateFrom(BitReader bits, bool ignoreChecksum = false)
     {
         uint version = bits.ReadUInt();
 

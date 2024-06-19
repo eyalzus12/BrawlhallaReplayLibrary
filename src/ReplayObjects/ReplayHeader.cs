@@ -7,7 +7,7 @@ public class ReplayHeader
     public required string? PlaylistName { get; set; }
     public required bool OnlineGame { get; set; }
 
-    internal static ReplayHeader CreateFrom(BitStream bits)
+    internal static ReplayHeader CreateFrom(BitReader bits)
     {
         uint randomSeed = bits.ReadUInt();
         uint playlistId = bits.ReadUInt();

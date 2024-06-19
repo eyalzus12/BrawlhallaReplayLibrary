@@ -6,7 +6,7 @@ public record ReplayEntityData
     public required string Name { get; set; }
     public required ReplayPlayerData PlayerData { get; set; }
 
-    internal static ReplayEntityData CreateFrom(BitStream bits, int heroCount)
+    internal static ReplayEntityData CreateFrom(BitReader bits, int heroCount)
     {
         int entId = bits.ReadInt(); // why is this 32 bits while every other ent id is 5?
         string name = bits.ReadString();

@@ -8,7 +8,7 @@ public class ReplayResult
     public required Dictionary<byte, short> Scores { get; set; } // key is 5 bits
     public required uint EndOfMatchFanfareId { get; set; }
 
-    internal static ReplayResult CreateFrom(BitStream bits)
+    internal static ReplayResult CreateFrom(BitReader bits)
     {
         uint length = bits.ReadUInt();
         Dictionary<byte, short> scores = [];

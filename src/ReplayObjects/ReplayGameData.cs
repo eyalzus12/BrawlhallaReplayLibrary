@@ -9,7 +9,7 @@ public class ReplayGameData
     public required List<ReplayEntityData> Entities { get; set; }
     public required uint Checksum { get; set; }
 
-    internal static ReplayGameData CreateFrom(BitStream bits)
+    internal static ReplayGameData CreateFrom(BitReader bits)
     {
         ReplayGameSettings settings = ReplayGameSettings.CreateFrom(bits);
         uint levelId = bits.ReadUInt();

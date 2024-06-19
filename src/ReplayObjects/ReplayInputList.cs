@@ -6,7 +6,7 @@ public class ReplayInputList
 {
     public required Dictionary<byte, List<ReplayInput>> Inputs { get; set; } // key is 5 bits
 
-    internal static ReplayInputList CreateFrom(BitStream bits)
+    internal static ReplayInputList CreateFrom(BitReader bits)
     {
         Dictionary<byte, List<ReplayInput>> inputs = [];
 

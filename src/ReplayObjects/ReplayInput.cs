@@ -5,7 +5,7 @@ public class ReplayInput
     public required int TimeStamp { get; set; }
     public required ReplayInputFlags InputFlags { get; set; }
 
-    internal static ReplayInput CreateFrom(BitStream bits)
+    internal static ReplayInput CreateFrom(BitReader bits)
     {
         int timeStamp = bits.ReadInt();
         bool hasInput = bits.ReadBool();

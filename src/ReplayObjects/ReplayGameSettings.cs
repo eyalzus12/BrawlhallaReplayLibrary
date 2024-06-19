@@ -18,7 +18,7 @@ public class ReplayGameSettings
     public required ReplayGadgetSelectFlags CustomGadgetSelection { get; set; }
     public required uint Variation { get; set; }
 
-    internal static ReplayGameSettings CreateFrom(BitStream bits)
+    internal static ReplayGameSettings CreateFrom(BitReader bits)
     {
         ReplayGameModeFlags flags = (ReplayGameModeFlags)bits.ReadUInt();
         uint maxPlayers = bits.ReadUInt();
