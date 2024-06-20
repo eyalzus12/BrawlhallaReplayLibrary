@@ -72,10 +72,16 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
         WriteBits(bits, 32);
     }
 
-    public void Flush()
+    public void ByteAlign()
     {
         if (_indexInByte != 8)
             stream.WriteByte(_currentByte);
+    }
+
+    public void Flush()
+    {
+        ByteAlign();
+        stream.Flush();
     }
 
     protected virtual void Dispose(bool disposing)

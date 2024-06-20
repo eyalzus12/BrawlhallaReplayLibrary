@@ -130,7 +130,7 @@ public class Replay
         Inputs.WriteTo(bits);
         bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
         bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
-        bits.Flush();
+        bits.ByteAlign();
         bits.WriteUInt(Version);
         bits.WriteUInt(0x7E91A5D0);
     }
