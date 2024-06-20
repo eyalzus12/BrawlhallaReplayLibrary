@@ -129,5 +129,9 @@ public class Replay
         bits.WriteBits((byte)ReplayObjectTypeEnum.Inputs, 4);
         Inputs.WriteTo(bits);
         bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
+        bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
+        bits.Flush();
+        bits.WriteUInt(Version);
+        bits.WriteUInt(0x7E91A5D0);
     }
 }
