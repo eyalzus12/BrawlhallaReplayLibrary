@@ -4,7 +4,7 @@ namespace BrawlhallaReplayLibrary;
 
 public class ReplayFaces
 {
-    public required List<ReplayFace> Faces { get; set; }
+    public required ReplayFace[] Faces { get; set; }
 
     internal static ReplayFaces CreateFrom(BitReader bits)
     {
@@ -17,7 +17,7 @@ public class ReplayFaces
 
         return new()
         {
-            Faces = faces
+            Faces = [.. faces]
         };
     }
 

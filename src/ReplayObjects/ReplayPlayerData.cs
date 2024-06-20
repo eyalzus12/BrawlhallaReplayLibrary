@@ -13,11 +13,11 @@ public class ReplayPlayerData
     public required ReplayOwnedTaunts OwnedTaunts { get; set; }
     public required ushort WinTauntId { get; set; }
     public required ushort LoseTauntId { get; set; }
-    public required List<uint> Taunts { get; set; }
+    public required uint[] Taunts { get; set; }
     public required ushort AvatarId { get; set; }
     public required int Team { get; set; }
     public required int ConnectionTime { get; set; }
-    public required List<ReplayHeroType> HeroTypes { get; set; }
+    public required ReplayHeroType[] HeroTypes { get; set; }
     public required bool IsBot { get; set; }
     public required bool HandicapsEnabled { get; set; }
     public required uint? HandicapStockCount { get; set; }
@@ -57,11 +57,11 @@ public class ReplayPlayerData
             OwnedTaunts = ownedTaunts,
             WinTauntId = winTauntId,
             LoseTauntId = loseTauntId,
-            Taunts = taunts,
+            Taunts = [.. taunts],
             AvatarId = avatarId,
             Team = team,
             ConnectionTime = connectionTime,
-            HeroTypes = heroTypes,
+            HeroTypes = [.. heroTypes],
             IsBot = isBot,
             HandicapsEnabled = handicapsEnabled,
             HandicapStockCount = handicapStockCount,
@@ -110,10 +110,10 @@ public class ReplayPlayerData
         checksum += OwnedTaunts.CalculateChecksum();
         checksum += WinTauntId * 37u;
         checksum += LoseTauntId * 41u;
-        for (int i = 0; i < Taunts.Count; ++i)
+        for (int i = 0; i < Taunts.Length; ++i)
             checksum += (uint)(BitOperations.PopCount(Taunts[i]) * (11u + i));
         checksum += (uint)Team * 43u;
-        for (int i = 0; i < HeroTypes.Count; ++i)
+        for (int i = 0; i < HeroTypes.Length; ++i)
             checksum += HeroTypes[i].CalculateChecksum((uint)i);
 
         if (!HandicapsEnabled)

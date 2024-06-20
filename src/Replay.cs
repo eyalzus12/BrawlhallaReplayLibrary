@@ -9,7 +9,7 @@ public class Replay
     public required uint Version { get; set; }
     public required ReplayHeader Header { get; set; }
     public required ReplayGameData GameData { get; set; }
-    public required List<ReplayResult> Results { get; set; }
+    public required ReplayResult[] Results { get; set; }
     public required ReplayFaces KnockoutFaces { get; set; }
     public ReplayFaces? OtherFaces { get; set; }
     public required ReplayInputList Inputs { get; set; }
@@ -100,7 +100,7 @@ public class Replay
             Version = version,
             Header = header,
             GameData = gameData,
-            Results = results,
+            Results = [.. results],
             KnockoutFaces = knockoutFaces,
             OtherFaces = otherFaces,
             Inputs = inputs

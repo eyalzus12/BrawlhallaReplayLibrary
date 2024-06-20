@@ -7,7 +7,7 @@ public class ReplayGameData
 {
     public required ReplayGameSettings Settings { get; set; }
     public required uint LevelId { get; set; }
-    public required List<ReplayEntityData> Entities { get; set; }
+    public required ReplayEntityData[] Entities { get; set; }
     public required uint Checksum { get; set; }
 
     internal static ReplayGameData CreateFrom(BitReader bits)
@@ -26,7 +26,7 @@ public class ReplayGameData
         {
             Settings = settings,
             LevelId = levelId,
-            Entities = entities,
+            Entities = [.. entities],
             Checksum = checksum,
         };
     }
@@ -35,9 +35,9 @@ public class ReplayGameData
     {
         Settings.WriteTo(bits);
         bits.WriteUInt(LevelId);
-        if (Entities.Select(e => e.PlayerData.HeroTypes.Count).Distinct().Count() != 1)
+        if (Entities.Select(e => e.PlayerData.HeroTypes.Length).Distinct().Count() != 1)
             throw new ReplaySerializationException("All entites must have the same number of heros");
-        ushort heroCount = (ushort)Entities[0].PlayerData.HeroTypes.Count;
+        ushort heroCount = (ushort)Entities[0].PlayerData.HeroTypes.Length;
         bits.WriteUShort(heroCount);
         foreach (ReplayEntityData entity in Entities)
         {

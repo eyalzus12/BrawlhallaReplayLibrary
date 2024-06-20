@@ -4,22 +4,23 @@ namespace BrawlhallaReplayLibrary;
 
 public class ReplayInputList
 {
-    public required Dictionary<byte, List<ReplayInput>> Inputs { get; set; } // key is 5 bits
+    public required Dictionary<byte, ReplayInput[]> Inputs { get; set; } // key is 5 bits
 
     internal static ReplayInputList CreateFrom(BitReader bits)
     {
-        Dictionary<byte, List<ReplayInput>> inputs = [];
+        Dictionary<byte, ReplayInput[]> inputs = [];
 
         while (bits.ReadBool())
         {
             byte entId = (byte)bits.ReadBits(5);
             int inputCount = bits.ReadInt();
-            inputs.TryAdd(entId, []);
+            List<ReplayInput> entityInputs = [.. inputs.GetValueOrDefault(entId, [])];
             for (int i = 0; i < inputCount; ++i)
             {
                 ReplayInput input = ReplayInput.CreateFrom(bits);
-                inputs[entId].Add(input);
+                entityInputs.Add(input);
             }
+            inputs.TryAdd(entId, [.. entityInputs]);
         }
 
         return new()
@@ -30,13 +31,13 @@ public class ReplayInputList
 
     internal void WriteTo(BitWriter bits)
     {
-        foreach ((byte entId, List<ReplayInput> inputs) in Inputs)
+        foreach ((byte entId, ReplayInput[] inputs) in Inputs)
         {
             if (entId >= (1 << 6))
                 throw new ReplaySerializationException($"the keys of {nameof(ReplayInputList)}.{nameof(Inputs)} cannot be larger than 63");
             bits.WriteBool(true);
             bits.WriteBits(entId, 5);
-            bits.WriteInt(inputs.Count);
+            bits.WriteInt(inputs.Length);
             foreach (ReplayInput input in inputs)
                 input.WriteTo(bits);
         }
