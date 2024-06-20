@@ -132,6 +132,6 @@ public class Replay
         bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
         bits.ByteAlign();
         bits.WriteUInt(Version);
-        bits.WriteUInt(0x7E91A5D0);
+        bits.WriteUInt(0xC7EE5EE1);
     }
 }
