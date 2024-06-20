@@ -16,4 +16,18 @@ public class ReplayInput
             InputFlags = inputFlags,
         };
     }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteInt(TimeStamp);
+        if (InputFlags != 0)
+        {
+            bits.WriteBool(true);
+            bits.WriteBits((ushort)InputFlags, 14);
+        }
+        else
+        {
+            bits.WriteBool(false);
+        }
+    }
 }

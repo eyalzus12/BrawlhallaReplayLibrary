@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BrawlhallaReplayLibrary;
 
@@ -28,6 +29,27 @@ public class ReplayGameData
             Entities = entities,
             Checksum = checksum,
         };
+    }
+
+    internal void WriteTo(BitWriter bits, bool calculateChecksum = true)
+    {
+        Settings.WriteTo(bits);
+        bits.WriteUInt(LevelId);
+        if (Entities.Select(e => e.PlayerData.HeroTypes.Count).Distinct().Count() != 1)
+            throw new ReplaySerializationException("All entites must have the same number of heros");
+        ushort heroCount = (ushort)Entities[0].PlayerData.HeroTypes.Count;
+        bits.WriteUShort(heroCount);
+        foreach (ReplayEntityData entity in Entities)
+        {
+            bits.WriteBool(true);
+            entity.WriteTo(bits);
+        }
+        bits.WriteBool(false);
+
+        if (calculateChecksum)
+            bits.WriteUInt(CalculateChecksum());
+        else
+            bits.WriteUInt(Checksum);
     }
 
     public uint CalculateChecksum()

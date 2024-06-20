@@ -21,4 +21,13 @@ public class ReplayHeader
             OnlineGame = onlineGame,
         };
     }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteUInt(RandomSeed);
+        bits.WriteUInt(PlaylistId);
+        if (PlaylistId != 0)
+            bits.WriteString(PlaylistName ?? throw new ReplaySerializationException($"if {nameof(ReplayHeader)}.{nameof(PlaylistId)} is not 0, {nameof(ReplayHeader)}.{nameof(PlaylistName)} must be non-null."));
+        bits.WriteBool(OnlineGame);
+    }
 }

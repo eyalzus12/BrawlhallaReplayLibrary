@@ -1,6 +1,6 @@
 namespace BrawlhallaReplayLibrary;
 
-public enum ReplayObjectTypeEnum
+internal enum ReplayObjectTypeEnum
 {
     Inputs = 1,
     End = 2,

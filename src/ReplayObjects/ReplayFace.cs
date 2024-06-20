@@ -15,4 +15,12 @@ public class ReplayFace
             EntId = entId,
         };
     }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        if (EntId >= (1 << 6))
+            throw new ReplaySerializationException($"the value of {nameof(ReplayFace)}.{nameof(EntId)} cannot be larger than 63");
+        bits.WriteBits(EntId, 5);
+        bits.WriteInt(TimeStamp);
+    }
 }

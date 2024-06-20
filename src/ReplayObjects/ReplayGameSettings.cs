@@ -55,4 +55,23 @@ public class ReplayGameSettings
             Variation = variation,
         };
     }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteUInt((uint)Flags);
+        bits.WriteUInt(MaxPlayers);
+        bits.WriteUInt(Duration);
+        bits.WriteUInt(RoundDuration);
+        bits.WriteUInt(StartingLives);
+        bits.WriteUInt(ScoringTypeId);
+        bits.WriteUInt(ScoreToWin);
+        bits.WriteUInt(GameSpeed);
+        bits.WriteUInt(DamageMultiplier);
+        bits.WriteUInt(LevelSetId);
+        bits.WriteUInt(ItemSpawnRuleSetId);
+        bits.WriteUInt(WeaponSpawnRateId);
+        bits.WriteUInt(GadgetSpawnRateId);
+        bits.WriteUInt((uint)CustomGadgetSelection);
+        bits.WriteUInt(Variation);
+    }
 }

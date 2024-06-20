@@ -14,11 +14,18 @@ public class Replay
     public ReplayFaces? OtherFaces { get; set; }
     public required ReplayInputList Inputs { get; set; }
 
-    public static Replay Load(Stream stream, bool ignoreChecksum = false)
+    public static Replay Load(Stream stream, bool ignoreChecksum = false, bool leaveStreamOpen = false)
     {
-        using ZLibStream zlibStream = new(stream, CompressionMode.Decompress);
-        using BitReader bits = new(zlibStream);
+        using ZLibStream zLibStream = new(stream, CompressionMode.Decompress);
+        using BitReader bits = new(zLibStream, leaveOpen: leaveStreamOpen);
         return CreateFrom(bits, ignoreChecksum);
+    }
+
+    public void Save(Stream stream, bool calculateChecksum = true, bool leaveStreamOpen = false)
+    {
+        using ZLibStream zLibStream = new(stream, CompressionLevel.SmallestSize);
+        using BitWriter bits = new(zLibStream, leaveOpen: leaveStreamOpen);
+        WriteTo(bits, calculateChecksum);
     }
 
     internal static Replay CreateFrom(BitReader bits, bool ignoreChecksum = false)
@@ -98,5 +105,29 @@ public class Replay
             OtherFaces = otherFaces,
             Inputs = inputs
         };
+    }
+
+    internal void WriteTo(BitWriter bits, bool calculateChecksum = true)
+    {
+        bits.WriteUInt(Version);
+        bits.WriteBits((byte)ReplayObjectTypeEnum.Header, 4);
+        Header.WriteTo(bits);
+        bits.WriteBits((byte)ReplayObjectTypeEnum.GameData, 4);
+        GameData.WriteTo(bits, calculateChecksum);
+        foreach (ReplayResult result in Results)
+        {
+            bits.WriteBits((byte)ReplayObjectTypeEnum.Results, 4);
+            result.WriteTo(bits);
+        }
+        bits.WriteBits((byte)ReplayObjectTypeEnum.KnockoutFaces, 4);
+        KnockoutFaces.WriteTo(bits);
+        if (OtherFaces is not null)
+        {
+            bits.WriteBits((byte)ReplayObjectTypeEnum.Faces, 4);
+            OtherFaces.WriteTo(bits);
+        }
+        bits.WriteBits((byte)ReplayObjectTypeEnum.Inputs, 4);
+        Inputs.WriteTo(bits);
+        bits.WriteBits((byte)ReplayObjectTypeEnum.End, 4);
     }
 }

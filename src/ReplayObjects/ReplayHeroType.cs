@@ -25,6 +25,15 @@ public class ReplayHeroType
         };
     }
 
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteUInt(HeroId);
+        bits.WriteUInt(CostumeId);
+        bits.WriteUInt(StanceIndex);
+        bits.WriteUShort(WeaponSkin2);
+        bits.WriteUShort(WeaponSkin1);
+    }
+
     public uint CalculateChecksum(uint index)
     {
         uint checksum = 0;

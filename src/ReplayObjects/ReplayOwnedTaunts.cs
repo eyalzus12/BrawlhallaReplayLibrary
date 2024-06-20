@@ -15,6 +15,11 @@ public class ReplayOwnedTaunts
         };
     }
 
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteManyBits(TauntsBitfield);
+    }
+
     public uint[] ToPacked()
     {
         uint[] packed = new uint[8];

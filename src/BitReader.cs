@@ -28,7 +28,7 @@ internal class BitReader(Stream stream, bool leaveOpen = false) : IDisposable
             int newByte = _stream.ReadByte();
             if (newByte == -1)
                 throw new EndOfStreamException();
-            _currentByte = (byte)(newByte ^ REPLAY_BYTE_XOR[_byteIndex % REPLAY_BYTE_XOR.Length]);
+            _currentByte = (byte)(newByte ^ ReplayUtils.GetReplayByteXor(_byteIndex));
             _indexInByte = 0;
         }
 

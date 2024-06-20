@@ -14,11 +14,20 @@ public class ReplayFaces
             ReplayFace face = ReplayFace.CreateFrom(bits);
             faces.Add(face);
         }
-        faces.Sort((a, b) => a.TimeStamp.CompareTo(b.TimeStamp));
 
         return new()
         {
             Faces = faces
         };
+    }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        foreach (ReplayFace face in Faces)
+        {
+            bits.WriteBool(true);
+            face.WriteTo(bits);
+        }
+        bits.WriteBool(false);
     }
 }

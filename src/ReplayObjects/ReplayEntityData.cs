@@ -19,5 +19,12 @@ public record ReplayEntityData
         };
     }
 
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteInt(EntId);
+        bits.WriteString(Name);
+        PlayerData.WriteTo(bits);
+    }
+
     public uint CalculateChecksum() => PlayerData.CalculateChecksum();
 }

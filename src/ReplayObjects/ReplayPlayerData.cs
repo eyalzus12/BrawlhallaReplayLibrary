@@ -14,7 +14,7 @@ public class ReplayPlayerData
     public required ushort WinTauntId { get; set; }
     public required ushort LoseTauntId { get; set; }
     public required List<uint> Taunts { get; set; }
-    public required uint AvatarId { get; set; }
+    public required ushort AvatarId { get; set; }
     public required int Team { get; set; }
     public required int ConnectionTime { get; set; }
     public required List<ReplayHeroType> HeroTypes { get; set; }
@@ -36,7 +36,7 @@ public class ReplayPlayerData
         List<uint> taunts = [];
         while (bits.ReadBool())
             taunts.Add(bits.ReadUInt());
-        uint avatarId = bits.ReadUShort();
+        ushort avatarId = bits.ReadUShort();
         int team = bits.ReadInt();
         int connectionTime = bits.ReadInt();
         List<ReplayHeroType> heroTypes = new(heroCount);
@@ -70,6 +70,36 @@ public class ReplayPlayerData
         };
     }
 
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteUInt(ColorSchemeId);
+        bits.WriteUInt(SpawnBotId);
+        bits.WriteUInt(EmitterId);
+        bits.WriteUInt(PlayerThemeId);
+        OwnedTaunts.WriteTo(bits);
+        bits.WriteUShort(WinTauntId);
+        bits.WriteUShort(LoseTauntId);
+        foreach (uint taunt in Taunts)
+        {
+            bits.WriteBool(true);
+            bits.WriteUInt(taunt);
+        }
+        bits.WriteBool(false);
+        bits.WriteUShort(AvatarId);
+        bits.WriteInt(Team);
+        bits.WriteInt(ConnectionTime);
+        foreach (ReplayHeroType heroType in HeroTypes)
+            heroType.WriteTo(bits);
+        bits.WriteBool(IsBot);
+        bits.WriteBool(HandicapsEnabled);
+        if (HandicapsEnabled)
+        {
+            bits.WriteUInt(HandicapStockCount ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapStockCount)} must be non-null"));
+            bits.WriteUInt(HandicapDamageDoneMult ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapDamageDoneMult)} must be non-null"));
+            bits.WriteUInt(HandicapDamageTakenMult ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapDamageTakenMult)} must be non-null"));
+        }
+    }
+
     public uint CalculateChecksum()
     {
         uint checksum = 0;
@@ -90,9 +120,12 @@ public class ReplayPlayerData
             checksum += 29;
         else
         {
-            checksum += (uint)HandicapStockCount! * 31u;
-            checksum += (uint)Math.Round((uint)HandicapDamageDoneMult! / 10.0) * 3u;
-            checksum += (uint)Math.Round((uint)HandicapDamageTakenMult! / 10.0) * 23u;
+            uint handicapStockCount = HandicapStockCount ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapStockCount)} must be non-null");
+            checksum += handicapStockCount * 31u;
+            uint handicapDamageDoneMult = HandicapDamageDoneMult ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapDamageDoneMult)} must be non-null");
+            checksum += (uint)Math.Round(handicapDamageDoneMult / 10.0) * 3u;
+            uint handicapDamageTakenMult = HandicapDamageTakenMult ?? throw new ReplaySerializationException($"if {nameof(ReplayPlayerData)}.{nameof(HandicapsEnabled)} is true, {nameof(ReplayPlayerData)}.{nameof(HandicapDamageTakenMult)} must be non-null");
+            checksum += (uint)Math.Round(handicapDamageTakenMult / 10.0) * 23u;
         }
 
         return checksum;

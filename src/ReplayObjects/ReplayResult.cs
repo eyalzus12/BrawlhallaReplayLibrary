@@ -33,4 +33,25 @@ public class ReplayResult
             EndOfMatchFanfareId = endOfMatchFanfareId,
         };
     }
+
+    internal void WriteTo(BitWriter bits)
+    {
+        bits.WriteUInt(Length);
+        if (Scores.Count != 0)
+        {
+            bits.WriteBool(true);
+            foreach ((byte entId, short score) in Scores)
+            {
+                bits.WriteBool(true);
+                if (entId >= (1 << 6))
+                    throw new ReplaySerializationException($"the keys of {nameof(ReplayResult)}.{nameof(Scores)} cannot be larger than 63");
+                bits.WriteBits(entId, 5);
+                bits.WriteShort(score);
+            }
+            bits.WriteBool(false);
+        }
+        else
+            bits.WriteBool(false);
+        bits.WriteUInt(EndOfMatchFanfareId);
+    }
 }
