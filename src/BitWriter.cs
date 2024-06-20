@@ -8,14 +8,13 @@ namespace BrawlhallaReplayLibrary;
 
 internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
 {
-    private readonly Stream _stream = stream;
     private bool disposedValue;
 
     private long _byteIndex = -1;
     private byte _currentByte;
     private int _indexInByte = 8;
 
-    public long Length => 8 * _stream.Length;
+    public long Length => 8 * stream.Length;
     public long Position => 8 * _byteIndex + _indexInByte;
 
     public void WriteBool(bool bit)
@@ -23,7 +22,7 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
         if (_indexInByte == 8)
         {
             _byteIndex++;
-            _stream.WriteByte((byte)(_currentByte ^ ReplayUtils.GetReplayByteXor(_byteIndex)));
+            stream.WriteByte((byte)(_currentByte ^ ReplayUtils.GetReplayByteXor(_byteIndex)));
             _currentByte = 0;
             _indexInByte = 0;
         }
@@ -76,7 +75,7 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
     public void Flush()
     {
         if (_indexInByte != 8)
-            _stream.WriteByte(_currentByte);
+            stream.WriteByte(_currentByte);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -87,7 +86,7 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
 
             if (disposing)
             {
-                if (!leaveOpen) _stream.Dispose();
+                if (!leaveOpen) stream.Dispose();
             }
 
             disposedValue = true;
