@@ -1,5 +1,4 @@
 using System;
-using System.Buffers.Binary;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -11,24 +10,26 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
     private bool disposedValue;
 
     private long _byteIndex = 0;
-    private byte _currentByte;
+    private byte _currentByte = 0;
     private int _indexInByte = 0;
 
     public long Length => 8 * stream.Length;
     public long Position => 8 * _byteIndex + _indexInByte;
 
+    private void PushByte()
+    {
+        stream.WriteByte((byte)(_currentByte ^ ReplayUtils.GetReplayByteXor(_byteIndex)));
+        _byteIndex++;
+        _currentByte = 0;
+        _indexInByte = 0;
+    }
+
     public void WriteBool(bool bit)
     {
-        if (_indexInByte == 8)
-        {
-            stream.WriteByte((byte)(_currentByte ^ ReplayUtils.GetReplayByteXor(_byteIndex)));
-            _byteIndex++;
-            _currentByte = 0;
-            _indexInByte = 0;
-        }
-
         _currentByte |= (byte)((bit ? 1 : 0) << (7 - _indexInByte));
         _indexInByte++;
+        if (_indexInByte == 8)
+            PushByte();
     }
 
     public void WriteBits(ulong value, int amount)
@@ -67,7 +68,7 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
     public void ByteAlign()
     {
         if (_indexInByte != 0)
-            stream.WriteByte(_currentByte);
+            PushByte();
     }
 
     public void Flush()
