@@ -10,9 +10,9 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
 {
     private bool disposedValue;
 
-    private long _byteIndex = -1;
+    private long _byteIndex = 0;
     private byte _currentByte;
-    private int _indexInByte = 8;
+    private int _indexInByte = 0;
 
     public long Length => 8 * stream.Length;
     public long Position => 8 * _byteIndex + _indexInByte;
@@ -21,8 +21,8 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
     {
         if (_indexInByte == 8)
         {
-            _byteIndex++;
             stream.WriteByte((byte)(_currentByte ^ ReplayUtils.GetReplayByteXor(_byteIndex)));
+            _byteIndex++;
             _currentByte = 0;
             _indexInByte = 0;
         }
@@ -64,17 +64,9 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
         WriteBytes(bytes);
     }
 
-    public void ReadFloat(float value)
-    {
-        Span<byte> buffer = stackalloc byte[4];
-        BinaryPrimitives.WriteSingleBigEndian(buffer, value);
-        uint bits = BinaryPrimitives.ReadUInt32BigEndian(buffer);
-        WriteBits(bits, 32);
-    }
-
     public void ByteAlign()
     {
-        if (_indexInByte != 8)
+        if (_indexInByte != 0)
             stream.WriteByte(_currentByte);
     }
 

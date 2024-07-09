@@ -81,15 +81,6 @@ internal class BitReader(Stream stream, bool leaveOpen = false) : IDisposable
         return content;
     }
 
-    public float ReadFloat()
-    {
-        Span<byte> buffer = stackalloc byte[4];
-        uint bits = (uint)ReadBits(32);
-        BinaryPrimitives.WriteUInt32BigEndian(buffer, bits);
-        float result = BinaryPrimitives.ReadUInt32BigEndian(buffer);
-        return result;
-    }
-
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
