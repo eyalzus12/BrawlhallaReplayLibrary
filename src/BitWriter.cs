@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Text;
 
@@ -38,12 +37,6 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
             WriteBool((value & (1u << i)) != 0);
     }
 
-    public void WriteManyBits(BitArray bits)
-    {
-        foreach (bool bit in bits)
-            WriteBool(bit);
-    }
-
     public void WriteByte(byte value) => WriteBits(value, 8);
 
     public void WriteBytes(byte[] bytes)
@@ -56,7 +49,6 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
     public void WriteShort(short value) => WriteUShort((ushort)value);
     public void WriteUInt(uint value) => WriteBits(value, 32);
     public void WriteInt(int value) => WriteUInt((uint)value);
-    public void WriteChar(char value) => WriteBits(value, 8);
 
     public void WriteString(string str)
     {

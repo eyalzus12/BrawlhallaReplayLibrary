@@ -10,10 +10,10 @@ public class ReplayPlayerData
     public required uint SpawnBotId { get; set; }
     public required uint EmitterId { get; set; }
     public required uint PlayerThemeId { get; set; }
-    public required ReplayOwnedTaunts OwnedTaunts { get; set; }
+    public required uint[] Taunts { get; set; }
     public required ushort WinTauntId { get; set; }
     public required ushort LoseTauntId { get; set; }
-    public required uint[] Taunts { get; set; }
+    public required uint[] OwnedTaunts { get; set; }
     public required ushort AvatarId { get; set; }
     public required int Team { get; set; }
     public required int ConnectionTime { get; set; }
@@ -30,12 +30,14 @@ public class ReplayPlayerData
         uint spawnBotId = bits.ReadUInt();
         uint emitterId = bits.ReadUInt();
         uint playerThemeId = bits.ReadUInt();
-        ReplayOwnedTaunts ownedTaunts = ReplayOwnedTaunts.CreateFrom(bits);
+        uint[] taunts = new uint[8];
+        for (int i = 0; i < 8; ++i)
+            taunts[i] = bits.ReadUInt();
         ushort winTauntId = bits.ReadUShort();
         ushort loseTauntId = bits.ReadUShort();
-        List<uint> taunts = [];
+        List<uint> ownedTaunts = [];
         while (bits.ReadBool())
-            taunts.Add(bits.ReadUInt());
+            ownedTaunts.Add(bits.ReadUInt());
         ushort avatarId = bits.ReadUShort();
         int team = bits.ReadInt();
         int connectionTime = bits.ReadInt();
@@ -54,10 +56,10 @@ public class ReplayPlayerData
             SpawnBotId = spawnBotId,
             EmitterId = emitterId,
             PlayerThemeId = playerThemeId,
-            OwnedTaunts = ownedTaunts,
+            Taunts = taunts,
             WinTauntId = winTauntId,
             LoseTauntId = loseTauntId,
-            Taunts = [.. taunts],
+            OwnedTaunts = [.. ownedTaunts],
             AvatarId = avatarId,
             Team = team,
             ConnectionTime = connectionTime,
@@ -76,10 +78,11 @@ public class ReplayPlayerData
         bits.WriteUInt(SpawnBotId);
         bits.WriteUInt(EmitterId);
         bits.WriteUInt(PlayerThemeId);
-        OwnedTaunts.WriteTo(bits);
+        for (int i = 0; i < 8; ++i)
+            bits.WriteUInt(Taunts[i]);
         bits.WriteUShort(WinTauntId);
         bits.WriteUShort(LoseTauntId);
-        foreach (uint taunt in Taunts)
+        foreach (uint taunt in OwnedTaunts)
         {
             bits.WriteBool(true);
             bits.WriteUInt(taunt);
@@ -107,11 +110,12 @@ public class ReplayPlayerData
         checksum += SpawnBotId * 93u;
         checksum += EmitterId * 97u;
         checksum += PlayerThemeId * 53u;
-        checksum += OwnedTaunts.CalculateChecksum();
+        for (int i = 0; i < 8; ++i)
+            checksum += Taunts[i] * (uint)(13 + i);
         checksum += WinTauntId * 37u;
         checksum += LoseTauntId * 41u;
-        for (int i = 0; i < Taunts.Length; ++i)
-            checksum += (uint)(BitOperations.PopCount(Taunts[i]) * (11u + i));
+        for (int i = 0; i < OwnedTaunts.Length; ++i)
+            checksum += (uint)(BitOperations.PopCount(OwnedTaunts[i]) * (11u + i));
         checksum += (uint)Team * 43u;
         for (int i = 0; i < HeroTypes.Length; ++i)
             checksum += HeroTypes[i].CalculateChecksum((uint)i);

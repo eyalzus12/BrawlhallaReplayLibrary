@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Text;
 
@@ -44,16 +43,6 @@ internal class BitReader(Stream stream, bool leaveOpen = false) : IDisposable
         return result;
     }
 
-    public BitArray ReadManyBits(int count)
-    {
-        BitArray result = new(count);
-        for (int i = 0; i < count; ++i)
-        {
-            result[i] = ReadBool();
-        }
-        return result;
-    }
-
     public byte ReadByte() => (byte)ReadBits(8);
 
     public byte[] ReadBytes(int amount)
@@ -70,7 +59,6 @@ internal class BitReader(Stream stream, bool leaveOpen = false) : IDisposable
     public short ReadShort() => (short)ReadUShort();
     public uint ReadUInt() => (uint)ReadBits(32);
     public int ReadInt() => (int)ReadUInt();
-    public char ReadChar() => (char)ReadBits(8);
 
     public string ReadString()
     {
