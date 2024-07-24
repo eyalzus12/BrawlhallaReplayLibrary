@@ -33,11 +33,13 @@ public static class ReplayUtils
         uint taunt = 0;
         while (bits.ReadBool())
         {
+            uint bitfield = bits.ReadUInt();
+            // each 32 bitfield is used from lsb to msb
             for (int j = 0; j < 32; ++j)
             {
-                if (bits.ReadBool())
+                if ((bitfield & (1u << j)) != 0)
                     ownedTaunts.Add(taunt);
-                ++taunt;
+                taunt++;
             }
         }
         return [.. ownedTaunts];
@@ -49,7 +51,7 @@ public static class ReplayUtils
             return [];
         uint[] bitfields = new uint[ownedTaunts.Max() / 32 + 1];
         foreach (uint taunt in ownedTaunts)
-            bitfields[taunt / 32] |= 1u << (31 - (int)(taunt % 32));
+            bitfields[taunt / 32] |= 1u << (int)(taunt % 32); // each 32 bitfield is used from lsb to msb
         return bitfields;
     }
 
