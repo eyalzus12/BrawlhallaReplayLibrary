@@ -34,7 +34,7 @@ public class ReplayHeroType
         bits.WriteUShort(WeaponSkin1);
     }
 
-    public uint CalculateChecksum(uint index)
+    internal uint CalculateChecksum(uint index)
     {
         uint checksum = 0;
         checksum += HeroId * (17u + index);

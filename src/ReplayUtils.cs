@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BrawlhallaReplayLibrary;
 
@@ -31,5 +33,31 @@ public static class ReplayUtils
             0 => 0,
             _ => null
         };
+    }
+
+    internal static uint[] OwnedTauntsFrom(BitReader bits)
+    {
+        List<uint> ownedTaunts = [];
+        uint i = 0;
+        while (bits.ReadBool())
+        {
+            for (int j = 0; j < 32; ++j)
+            {
+                if (bits.ReadBool())
+                    ownedTaunts.Add(i);
+                ++i;
+            }
+        }
+        return [.. ownedTaunts];
+    }
+
+    internal static uint[] OwnedTauntsToBitfields(uint[] ownedTaunts)
+    {
+        if (ownedTaunts.Length == 0)
+            return [];
+        uint[] bitfields = new uint[ownedTaunts.Max() / 32 + 1];
+        foreach (uint taunt in ownedTaunts)
+            bitfields[taunt / 32] |= 1u << (31 - (int)(taunt % 32));
+        return bitfields;
     }
 }

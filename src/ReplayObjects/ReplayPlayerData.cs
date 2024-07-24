@@ -35,9 +35,7 @@ public class ReplayPlayerData
             taunts[i] = bits.ReadUInt();
         ushort winTauntId = bits.ReadUShort();
         ushort loseTauntId = bits.ReadUShort();
-        List<uint> ownedTaunts = [];
-        while (bits.ReadBool())
-            ownedTaunts.Add(bits.ReadUInt());
+        uint[] ownedTaunts = ReplayUtils.OwnedTauntsFrom(bits);
         ushort avatarId = bits.ReadUShort();
         int team = bits.ReadInt();
         int connectionTime = bits.ReadInt();
@@ -59,7 +57,7 @@ public class ReplayPlayerData
             Taunts = taunts,
             WinTauntId = winTauntId,
             LoseTauntId = loseTauntId,
-            OwnedTaunts = [.. ownedTaunts],
+            OwnedTaunts = ownedTaunts,
             AvatarId = avatarId,
             Team = team,
             ConnectionTime = connectionTime,
@@ -82,10 +80,11 @@ public class ReplayPlayerData
             bits.WriteUInt(Taunts[i]);
         bits.WriteUShort(WinTauntId);
         bits.WriteUShort(LoseTauntId);
-        foreach (uint taunt in OwnedTaunts)
+        uint[] ownedTauntBitfields = ReplayUtils.OwnedTauntsToBitfields(OwnedTaunts);
+        foreach (uint bitfield in ownedTauntBitfields)
         {
             bits.WriteBool(true);
-            bits.WriteUInt(taunt);
+            bits.WriteUInt(bitfield);
         }
         bits.WriteBool(false);
         bits.WriteUShort(AvatarId);
@@ -103,7 +102,7 @@ public class ReplayPlayerData
         }
     }
 
-    public uint CalculateChecksum()
+    internal uint CalculateChecksum()
     {
         uint checksum = 0;
         checksum += ColorSchemeId * 5u;
@@ -114,8 +113,9 @@ public class ReplayPlayerData
             checksum += Taunts[i] * (uint)(13 + i);
         checksum += WinTauntId * 37u;
         checksum += LoseTauntId * 41u;
-        for (int i = 0; i < OwnedTaunts.Length; ++i)
-            checksum += (uint)(BitOperations.PopCount(OwnedTaunts[i]) * (11u + i));
+        uint[] ownedTauntBitfields = ReplayUtils.OwnedTauntsToBitfields(OwnedTaunts);
+        for (int i = 0; i < ownedTauntBitfields.Length; ++i)
+            checksum += (uint)(BitOperations.PopCount(ownedTauntBitfields[i]) * (11u + i));
         checksum += (uint)Team * 43u;
         for (int i = 0; i < HeroTypes.Length; ++i)
             checksum += HeroTypes[i].CalculateChecksum((uint)i);

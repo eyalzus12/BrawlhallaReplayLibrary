@@ -26,5 +26,5 @@ public record ReplayEntityData
         PlayerData.WriteTo(bits);
     }
 
-    public uint CalculateChecksum() => PlayerData.CalculateChecksum();
+    internal uint CalculateChecksum() => PlayerData.CalculateChecksum();
 }
