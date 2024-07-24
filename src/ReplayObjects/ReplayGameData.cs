@@ -16,10 +16,12 @@ public class ReplayGameData
         uint levelId = bits.ReadUInt();
         ushort heroCount = bits.ReadUShort();
         if (heroCount < 1 || 5 < heroCount)
-            throw new InvalidReplayDataException($"HeroCount is {heroCount}, but must be between 1 and 5");
+            throw new InvalidReplayDataException($"Hero count is {heroCount}, but must be between 1 and 5");
         List<ReplayEntityData> entities = [];
         while (bits.ReadBool())
             entities.Add(ReplayEntityData.CreateFrom(bits, heroCount));
+        if (entities.Count == 0)
+            throw new InvalidReplayDataException("No entities were found in the replay");
         uint checksum = bits.ReadUInt();
 
         return new()
@@ -35,9 +37,13 @@ public class ReplayGameData
     {
         Settings.WriteTo(bits);
         bits.WriteUInt(LevelId);
-        if (Entities.Select(e => e.PlayerData.HeroTypes.Length).Distinct().Count() != 1)
+        if (Entities.Length == 0)
+            throw new ReplaySerializationException("There must be atleast one entity in the replay");
+        if (!Entities.Select(e => e.PlayerData.HeroTypes.Length).AllTheSame())
             throw new ReplaySerializationException("All entites must have the same number of heros");
         ushort heroCount = (ushort)Entities[0].PlayerData.HeroTypes.Length;
+        if (heroCount < 1 || 5 < heroCount)
+            throw new ReplaySerializationException("Entities can only have between 1 and 5 heros");
         bits.WriteUShort(heroCount);
         foreach (ReplayEntityData entity in Entities)
         {
