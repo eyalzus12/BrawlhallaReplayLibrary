@@ -38,14 +38,14 @@ public static class ReplayUtils
     internal static uint[] OwnedTauntsFrom(BitReader bits)
     {
         List<uint> ownedTaunts = [];
-        uint i = 0;
+        uint taunt = 0;
         while (bits.ReadBool())
         {
             for (int j = 0; j < 32; ++j)
             {
                 if (bits.ReadBool())
-                    ownedTaunts.Add(i);
-                ++i;
+                    ownedTaunts.Add(taunt);
+                ++taunt;
             }
         }
         return [.. ownedTaunts];

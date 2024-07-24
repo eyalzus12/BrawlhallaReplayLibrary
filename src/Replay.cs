@@ -16,14 +16,14 @@ public class Replay
 
     public static Replay Load(Stream stream, bool ignoreChecksum = false, bool leaveStreamOpen = false)
     {
-        using ZLibStream zLibStream = new(stream, CompressionMode.Decompress);
+        using ZLibStream zLibStream = new(stream, CompressionMode.Decompress, leaveOpen: leaveStreamOpen);
         using BitReader bits = new(zLibStream, leaveOpen: leaveStreamOpen);
         return CreateFrom(bits, ignoreChecksum);
     }
 
     public void Save(Stream stream, bool calculateChecksum = true, bool leaveStreamOpen = false)
     {
-        using ZLibStream zLibStream = new(stream, CompressionLevel.SmallestSize);
+        using ZLibStream zLibStream = new(stream, CompressionLevel.SmallestSize, leaveOpen: leaveStreamOpen);
         using BitWriter bits = new(zLibStream, leaveOpen: leaveStreamOpen);
         WriteTo(bits, calculateChecksum);
     }
