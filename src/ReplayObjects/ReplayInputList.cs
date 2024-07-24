@@ -33,8 +33,8 @@ public class ReplayInputList
     {
         foreach ((byte entId, ReplayInput[] inputs) in Inputs)
         {
-            if (entId >= (1 << 6))
-                throw new ReplaySerializationException($"the keys of {nameof(ReplayInputList)}.{nameof(Inputs)} cannot be larger than 63");
+            if (entId >= 32)
+                throw new ReplaySerializationException($"the keys of {nameof(ReplayInputList)}.{nameof(Inputs)} cannot exceed 31");
             bits.WriteBool(true);
             bits.WriteBits(entId, 5);
             bits.WriteInt(inputs.Length);

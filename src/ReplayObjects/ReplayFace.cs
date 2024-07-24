@@ -18,8 +18,8 @@ public class ReplayFace
 
     internal void WriteTo(BitWriter bits)
     {
-        if (EntId >= (1 << 6))
-            throw new ReplaySerializationException($"the value of {nameof(ReplayFace)}.{nameof(EntId)} cannot be larger than 63");
+        if (EntId >= 32)
+            throw new ReplaySerializationException($"the value of {nameof(ReplayFace)}.{nameof(EntId)} cannot exceed 31");
         bits.WriteBits(EntId, 5);
         bits.WriteInt(TimeStamp);
     }

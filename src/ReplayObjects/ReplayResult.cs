@@ -43,8 +43,8 @@ public class ReplayResult
             foreach ((byte entId, short score) in Scores)
             {
                 bits.WriteBool(true);
-                if (entId >= (1 << 6))
-                    throw new ReplaySerializationException($"the keys of {nameof(ReplayResult)}.{nameof(Scores)} cannot be larger than 63");
+                if (entId >= 32)
+                    throw new ReplaySerializationException($"the keys of {nameof(ReplayResult)}.{nameof(Scores)} cannot be larger than 31");
                 bits.WriteBits(entId, 5);
                 bits.WriteShort(score);
             }
