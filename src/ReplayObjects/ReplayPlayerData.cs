@@ -8,6 +8,7 @@ public class ReplayPlayerData
 {
     public required uint ColorSchemeId { get; set; }
     public required uint SpawnBotId { get; set; }
+    public required uint CompanionId { get; set; }
     public required uint EmitterId { get; set; }
     public required uint PlayerThemeId { get; set; }
     public required uint[] Taunts { get; set; }
@@ -28,6 +29,7 @@ public class ReplayPlayerData
     {
         uint colorSchemeId = bits.ReadUInt();
         uint spawnBotId = bits.ReadUInt();
+        uint companionId = bits.ReadUInt();
         uint emitterId = bits.ReadUInt();
         uint playerThemeId = bits.ReadUInt();
         uint[] taunts = new uint[8];
@@ -52,6 +54,7 @@ public class ReplayPlayerData
         {
             ColorSchemeId = colorSchemeId,
             SpawnBotId = spawnBotId,
+            CompanionId = companionId,
             EmitterId = emitterId,
             PlayerThemeId = playerThemeId,
             Taunts = taunts,
@@ -74,6 +77,7 @@ public class ReplayPlayerData
     {
         bits.WriteUInt(ColorSchemeId);
         bits.WriteUInt(SpawnBotId);
+        bits.WriteUInt(CompanionId);
         bits.WriteUInt(EmitterId);
         bits.WriteUInt(PlayerThemeId);
         for (int i = 0; i < 8; ++i)
@@ -107,6 +111,7 @@ public class ReplayPlayerData
         uint checksum = 0;
         checksum += ColorSchemeId * 5u;
         checksum += SpawnBotId * 93u;
+        // CompanionId not included
         checksum += EmitterId * 97u;
         checksum += PlayerThemeId * 53u;
         for (int i = 0; i < 8; ++i)
