@@ -55,14 +55,13 @@ public static class ReplayUtils
         return bitfields;
     }
 
-    internal static bool AllTheSame<T>(this IEnumerable<T> e)
+    internal static bool AllTheSame(this IEnumerable<int> e)
     {
-        HashSet<T> set = [];
-        foreach (T t in e)
+        int? only = null;
+        foreach (int i in e)
         {
-            if (set.Count > 0 && !set.Contains(t))
-                return false;
-            set.Add(t);
+            if (only is not null && i != only) return false;
+            only = i;
         }
         return true;
     }
