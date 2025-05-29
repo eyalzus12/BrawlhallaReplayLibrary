@@ -52,8 +52,8 @@ internal class BitWriter(Stream stream, bool leaveOpen = false) : IDisposable
 
     public void WriteString(string str)
     {
-        WriteUShort((ushort)str.Length);
         byte[] bytes = Encoding.UTF8.GetBytes(str);
+        WriteUShort((ushort)bytes.Length);
         WriteBytes(bytes);
     }
 
